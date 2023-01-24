@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { GlobalInterceptor } from './interceptors/global.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,16 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  await app.listen(6001);
+
+  const config = new DocumentBuilder()
+    .setTitle('Gateway Microservice APIS')
+    .setDescription('The apis in the gateway microservice')
+    .setVersion('1.0')
+    .addTag('gateway')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('apis', app, document);
+
+  await app.listen(3001);
 }
 bootstrap();
